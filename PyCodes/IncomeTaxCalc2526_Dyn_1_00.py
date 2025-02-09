@@ -1,3 +1,7 @@
+# Version: 1.00: Real-Time Tax Calculator with Dynamic Tax Calculation
+# Date: 2025-02-09
+# This versionns is for financial year 2025-26 tax rates.
+
 import tkinter as tk
 from tkinter import ttk
 
