@@ -126,6 +126,7 @@ class TaxCalculatorApp:
             ltcg_tax = taxable_ltcg * 0.125
             total_tax = tax + stcg_tax + ltcg_tax
 
+            breakdown += f"\nIncome Tax (on Salary, interest and other income): ₹{tax:,.2f}\n"
             breakdown += f"\nSTCG Tax (20%): ₹{stcg_tax:,.2f}\n"
             breakdown += f"LTCG Tax (12.5% after ₹1,25,000 deduction): ₹{ltcg_tax:,.2f}\n"
             breakdown += f"\nTotal Tax Payable: ₹{total_tax:,.2f}"
