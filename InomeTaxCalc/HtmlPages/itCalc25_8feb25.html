@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Updated Tax Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            width: 90%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Updated Tax Calculator</h2>
+        <label for="income">Enter Annual Income:</label>
+        <input type="number" id="income" placeholder="Enter your income" required>
+        <button onclick="calculateTax()">Calculate Tax</button>
+        <h3 id="result"></h3>
+    </div>
+
+    <script>
+        function calculateTax() {
+            let income = parseFloat(document.getElementById("income").value);
+            let tax = 0;
+
+            if (income <= 400000) {
+                tax = 0;
+            } else if (income <= 800000) {
+                tax = (income - 400000) * 0.05;
+            } else if (income <= 1200000) {
+                tax = 20000 + (income - 800000) * 0.10;
+            } else if (income <= 1600000) {
+                tax = 60000 + (income - 1200000) * 0.15;
+            } else if (income <= 2000000) {
+                tax = 120000 + (income - 1600000) * 0.20;
+            } else if (income <= 2400000) {
+                tax = 200000 + (income - 2000000) * 0.25;
+            } else {
+                tax = 300000 + (income - 2400000) * 0.30;
+            }
+
+            document.getElementById("result").innerHTML = "Estimated Tax: ₹" + tax.toFixed(2);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Tax Calculator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        #calculator {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="calculator">
+    <h2>Income Tax Calculator</h2>
+
+    <label for="monthlyIncome">Monthly Income:</label>
+    <input type="number" id="monthlyIncome" value="0">
+
+    <input type="checkbox" id="salaried" >
+    <label for="salaried">Salaried (Standard Deduction ₹75,000)</label><br><br>
+
+    <button onclick="calculateTax()">Calculate</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function calculateTax() {
+        const monthlyIncome = parseFloat(document.getElementById("monthlyIncome").value);
+        const isSalaried = document.getElementById("salaried").checked;
+        const yearlyIncome = monthlyIncome * 12;
+        let taxableIncome = yearlyIncome;
+
+        if (isSalaried) {
+            taxableIncome -= 75000;
+        }
+
+        let tax = 0;
+
+        if (taxableIncome > (isSalaried ? 1275000 : 1200000)) {
+            taxableIncome -= (isSalaried ? 1275000 : 1200000); // Deduct the non-taxable amount
+
+            if(taxableIncome > 0) { //Only calculate tax if income is above the non-taxable limit.
+                if (taxableIncome <= 400000) {
+                    tax = taxableIncome * 0.05;
+                } else if (taxableIncome <= 800000) {
+                    tax = 400000 * 0.05 + (taxableIncome - 400000) * 0.10;
+                } else if (taxableIncome <= 1200000) {
+                    tax = 400000 * 0.05 + 400000 * 0.10 + (taxableIncome - 800000) * 0.15;
+                } else if (taxableIncome <= 1600000) {
+                    tax = 400000 * 0.05 + 400000 * 0.10 + 400000 * 0.15 + (taxableIncome - 1200000) * 0.20;
+                } else if (taxableIncome <= 2100000) {
+                    tax = 400000 * 0.05 + 400000 * 0.10 + 400000 * 0.15 + 400000 * 0.20 + (taxableIncome - 1600000) * 0.25;
+                } else {
+                    tax = 400000 * 0.05 + 400000 * 0.10 + 400000 * 0.15 + 400000 * 0.20 + 500000 * 0.25 + (taxableIncome - 2100000) * 0.30;
+                }
+            }
+        }
+
+
+        document.getElementById("result").innerText = "Annual Income: ₹" + yearlyIncome.toLocaleString() + (isSalaried ? " (After Standard Deduction)" : "") +  "\nTaxable Income: ₹" + taxableIncome.toLocaleString() + "\nIncome Tax: ₹" + tax.toLocaleString();
+    }
+</script>
+
+</body>
+</html>

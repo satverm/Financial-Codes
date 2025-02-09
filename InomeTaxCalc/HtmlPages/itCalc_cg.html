@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Tax Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            width: 90%;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .info-box {
+            text-align: left;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 5px solid #007bff;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Comprehensive Tax Calculator</h2>
+
+        <div class="info-box">
+            <h3>📌 LTCG & STCG Tax Information</h3>
+            <ul>
+                <li><b>Long-Term Capital Gains (LTCG):</b> Taxed at <b>12.5%</b> for equity held over 1 year, after a deduction of ₹1,25,000.</li>
+                <li><b>Short-Term Capital Gains (STCG):</b> Taxed at <b>20%</b> on equity held for ≤1 year. No deduction allowed.</li>
+            </ul>
+        </div>
+
+        <h3>Tax Slabs</h3>
+        <table>
+            <tr><th>Income Range (₹)</th><th>Tax Rate</th></tr>
+            <tr><td>0 - 4,00,000</td><td>Nil</td></tr>
+            <tr><td>4,00,001 - 8,00,000</td><td>5%</td></tr>
+            <tr><td>8,00,001 - 12,00,000</td><td>10%</td></tr>
+            <tr><td>12,00,001 - 16,00,000</td><td>15%</td></tr>
+            <tr><td>16,00,001 - 20,00,000</td><td>20%</td></tr>
+            <tr><td>20,00,001 - 24,00,000</td><td>25%</td></tr>
+            <tr><td>Above 24,00,000</td><td>30%</td></tr>
+        </table>
+
+        <h3>Income Details</h3>
+
+        <label for="salary">Salary Income (₹):</label>
+        <input type="number" id="salary" placeholder="Enter salary income"><br>
+
+        <label for="hra">HRA Exemption (₹):</label>
+        <input type="number" id="hra" placeholder="Enter HRA exemption"><br>
+
+        <input type="checkbox" id="salaried"> <label for="salaried">Salaried Person (₹75,000 deduction)</label><br>
+
+        <label for="interest">Interest from Savings (₹):</label>
+        <input type="number" id="interest" placeholder="Enter interest income"><br>
+
+        <label for="other">Income from Other Sources (₹):</label>
+        <input type="number" id="other" placeholder="Enter other income"><br>
+
+        <label for="stcg">Short-Term Capital Gains (STCG) (₹):</label>
+        <input type="number" id="stcg" placeholder="Enter STCG amount"><br>
+
+        <label for="ltcg">Long-Term Capital Gains (LTCG) (₹):</label>
+        <input type="number" id="ltcg" placeholder="Enter LTCG amount"><br>
+
+        <button onclick="calculateTax()">Calculate Tax</button>
+        <h3 id="result"></h3>
+    </div>
+
+    <script>
+        function calculateTax() {
+            let salary = parseFloat(document.getElementById("salary").value) || 0;
+            let hra = parseFloat(document.getElementById("hra").value) || 0;
+            let interest = parseFloat(document.getElementById("interest").value) || 0;
+            let otherIncome = parseFloat(document.getElementById("other").value) || 0;
+            let stcg = parseFloat(document.getElementById("stcg").value) || 0;
+            let ltcg = parseFloat(document.getElementById("ltcg").value) || 0;
+            let isSalaried = document.getElementById("salaried").checked;
+
+            let standardDeduction = isSalaried ? 75000 : 0;
+
+            // LTCG Taxable Amount (After Deduction of ₹1,25,000)
+            let taxableLTCG = Math.max(ltcg - 125000, 0);
+
+            // Net Taxable Income
+            let netIncome = (salary - hra - standardDeduction) + interest + otherIncome;
+            let tax = 0;
+
+            // If net taxable income is ≤ 12,00,000 → No tax
+            if (netIncome <= 1200000) {
+                netIncome = 0;
+            }
+
+            // Apply normal tax slabs
+            if (netIncome > 400000) {
+                if (netIncome > 2400000) {
+                    tax += (netIncome - 2400000) * 0.30;
+                    netIncome = 2400000;
+                }
+                if (netIncome > 2000000) {
+                    tax += (netIncome - 2000000) * 0.25;
+                    netIncome = 2000000;
+                }
+                if (netIncome > 1600000) {
+                    tax += (netIncome - 1600000) * 0.20;
+                    netIncome = 1600000;
+                }
+                if (netIncome > 1200000) {
+                    tax += (netIncome - 1200000) * 0.15;
+                    netIncome = 1200000;
+                }
+                if (netIncome > 800000) {
+                    tax += (netIncome - 800000) * 0.10;
+                    netIncome = 800000;
+                }
+                if (netIncome > 400000) {
+                    tax += (netIncome - 400000) * 0.05;
+                }
+            }
+
+            // STCG (Short-Term Capital Gains) @ 20%
+            let stcgTax = stcg * 0.20;
+
+            // LTCG (Long-Term Capital Gains) @ 12.5%
+            let ltcgTax = taxableLTCG * 0.125;
+
+            // Total Tax Liability
+            let totalTax = tax + stcgTax + ltcgTax;
+
+            document.getElementById("result").innerHTML = 
+                `Estimated Tax: ₹${totalTax.toFixed(2)} <br>
+                 (INCOME TAX: ${tax.toFixed(2)}, STCG: ₹${stcgTax.toFixed(2)}, LTCG: ₹${ltcgTax.toFixed(2)})`;
+        }
+    </script>
+</body>
+</html>

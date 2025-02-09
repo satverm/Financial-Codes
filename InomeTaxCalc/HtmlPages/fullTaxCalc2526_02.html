@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Tax Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            width: 90%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Comprehensive Tax Calculator FY 2025-26(New Regime)</h2>
+
+        <label for="salary">Salary Income (₹):</label>
+        <input type="number" id="salary" placeholder="Enter salary income"><br>
+
+        <label for="hra">HRA Exemption (₹):</label>
+        <input type="number" id="hra" placeholder="Enter HRA exemption"><br>
+
+        <input type="checkbox" id="salaried"> <label for="salaried">Salaried Person (₹75,000 Standard deduction)</label><br>
+
+        <label for="interest">Interest from Savings (₹):</label>
+        <input type="number" id="interest" placeholder="Enter interest income"><br>
+
+        <label for="other">Income from Other Sources (₹):</label>
+        <input type="number" id="other" placeholder="Enter other income(dividends etc)"><br>
+
+        <label for="stcg">Short-Term Capital Gains (STCG) (₹):</label>
+        <input type="number" id="stcg" placeholder="Enter STCG amount"><br>
+
+        <label for="ltcg">Long-Term Capital Gains (LTCG) (₹):</label>
+        <input type="number" id="ltcg" placeholder="Enter LTCG amount"><br>
+
+        <button onclick="calculateTax()">Calculate Tax</button>
+    </div>
+
+    <script>
+        function calculateTax() {
+            let salary = parseFloat(document.getElementById("salary").value) || 0;
+            let hra = parseFloat(document.getElementById("hra").value) || 0;
+            let interest = parseFloat(document.getElementById("interest").value) || 0;
+            let otherIncome = parseFloat(document.getElementById("other").value) || 0;
+            let stcg = parseFloat(document.getElementById("stcg").value) || 0;
+            let ltcg = parseFloat(document.getElementById("ltcg").value) || 0;
+            let isSalaried = document.getElementById("salaried").checked;
+
+            let standardDeduction = isSalaried ? 75000 : 0;
+            let taxableLTCG = Math.max(ltcg - 125000, 0);
+
+            let netIncome = (salary - hra - standardDeduction) + interest + otherIncome;
+
+            let taxBreakdown = `<h3>Input Details</h3>
+                                <p><b>Salary Income:</b> ₹${salary}</p>
+                                <p><b>HRA Exemption:</b> ₹${hra}</p>
+                                <p><b>Standard Deduction:</b> ₹${standardDeduction}</p>
+                                <p><b>Interest Income:</b> ₹${interest}</p>
+                                <p><b>Other Income:</b> ₹${otherIncome}</p>
+                                <p><b>Net Income:</b> ₹${netIncome}</p>
+                                <p><b>STCG:</b> ₹${stcg}</p>
+                                <p><b>LTCG:</b> ₹${ltcg}</p>`;
+
+            let totalTax = 0;
+            let tax = 0;
+
+            // Apply tax slabs if net income is greater than ₹12,00,000
+            if (netIncome > 1200000) {
+                let slabs = [
+                    { limit: 400000, rate: 0 },
+                    { limit: 800000, rate: 0.05 },
+                    { limit: 1200000, rate: 0.10 },
+                    { limit: 1600000, rate: 0.15 },
+                    { limit: 2000000, rate: 0.20 },
+                    { limit: 2400000, rate: 0.25 },
+                    { limit: Infinity, rate: 0.30 }
+                ];
+
+                let previousLimit = 0;
+                for (let slab of slabs) {
+                    if (netIncome > slab.limit) {
+                        tax += (slab.limit - previousLimit) * slab.rate;
+                        taxBreakdown += `<p>${(slab.rate * 100).toFixed(0)}% on ₹${(slab.limit - previousLimit)} = ₹${((slab.limit - previousLimit) * slab.rate).toFixed(2)}</p>`;
+                        previousLimit = slab.limit;
+                    } else {
+                        tax += (netIncome - previousLimit) * slab.rate;
+                        taxBreakdown += `<p>${(slab.rate * 100).toFixed(0)}% on ₹${(netIncome - previousLimit)} = ₹${((netIncome - previousLimit) * slab.rate).toFixed(2)}</p>`;
+                        break;
+                    }
+                }
+            } else {
+                taxBreakdown += `<h3>Total Tax Liability (excluding LTCG & STCG): ₹0</h3>`;
+                taxBreakdown += `<p>Since taxable income from salary, interest, and other sources is ≤ ₹12,00,000, tax liability for this portion is <b>₹0</b>.</p>`;
+            }
+
+            let stcgTax = stcg * 0.20;
+            let ltcgTax = taxableLTCG * 0.125;
+            totalTax = tax + stcgTax + ltcgTax;
+
+            taxBreakdown += `<p><b>STCG Tax (20%):</b> ₹${stcgTax.toFixed(2)}</p>`;
+            taxBreakdown += `<p><b>LTCG Tax (12.5% after ₹1,25,000 deduction):</b> ₹${ltcgTax.toFixed(2)}</p>`;
+            taxBreakdown += `<h3>Final Total Tax Liability: ₹${totalTax.toFixed(2)}</h3>`;
+
+            // Open new page and show calculations
+            let taxWindow = window.open("", "_blank");
+            taxWindow.document.write(`
+                <html>
+                <head>
+                    <title>Tax Breakdown</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+                        .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 2px 2px 12px rgba(0,0,0,0.1); text-align: left; }
+                        h2 { text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h2>Detailed Tax Calculation</h2>
+                        ${taxBreakdown}
+                        <button onclick="window.print()">Print</button>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+    </script>
+</body>
+</html>

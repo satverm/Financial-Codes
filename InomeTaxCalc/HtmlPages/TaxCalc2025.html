@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Tax Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 600px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, button {
+            margin-top: 5px;
+            padding: 8px;
+            width: 100%;
+        }
+        #result {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Income Tax Calculator</h2>
+    
+    <label for="income">Enter Monthly Income (₹):</label>
+    <input type="number" id="income" placeholder="Enter your monthly income" oninput="calculateTax()">
+
+    <label>
+        <input type="checkbox" id="salaried" onchange="calculateTax()"> Salaried (Apply ₹75,000 Standard Deduction)
+    </label>
+
+    <div id="result">Tax to be paid: ₹0</div>
+
+    <h3>Tax Slabs</h3>
+    <table>
+        <tr>
+            <th>Taxable Income (Above ₹12L / ₹12.75L)</th>
+            <th>Tax Rate</th>
+        </tr>
+        <tr><td>₹4L - ₹8L</td> <td>5%</td></tr>
+        <tr><td>₹8L - ₹12L</td> <td>10%</td></tr>
+        <tr><td>₹12L - ₹16L</td> <td>15%</td></tr>
+        <tr><td>₹16L - ₹20L</td> <td>20%</td></tr>
+        <tr><td>₹20L - ₹25L</td> <td>25%</td></tr>
+        <tr><td>₹25L+</td> <td>30%</td></tr>
+    </table>
+
+    <script>
+        function calculateTax() {
+            let monthlyIncome = parseFloat(document.getElementById("income").value) || 0;
+            let isSalaried = document.getElementById("salaried").checked;
+
+            let yearlyIncome = monthlyIncome * 12;
+            let taxableIncome = yearlyIncome;
+
+            if (isSalaried) {
+                taxableIncome -= 75000;
+            }
+
+            let exemptionLimit = isSalaried ? 1275000 : 1200000;
+
+            let tax = 0;
+            if (taxableIncome > exemptionLimit) {
+                let slabIncome = taxableIncome - exemptionLimit;
+
+                if (slabIncome > 2500000) {
+                    tax += (slabIncome - 2500000) * 0.30;
+                    slabIncome = 2500000;
+                }
+                if (slabIncome > 2000000) {
+                    tax += (slabIncome - 2000000) * 0.25;
+                    slabIncome = 2000000;
+                }
+                if (slabIncome > 1600000) {
+                    tax += (slabIncome - 1600000) * 0.20;
+                    slabIncome = 1600000;
+                }
+                if (slabIncome > 1200000) {
+                    tax += (slabIncome - 1200000) * 0.15;
+                    slabIncome = 1200000;
+                }
+                if (slabIncome > 800000) {
+                    tax += (slabIncome - 800000) * 0.10;
+                    slabIncome = 800000;
+                }
+                if (slabIncome > 400000) {
+                    tax += (slabIncome - 400000) * 0.05;
+                }
+            }
+
+            document.getElementById("result").innerText = "Tax to be paid: ₹" + tax.toLocaleString();
+        }
+    </script>
+
+</body>
+</html>
